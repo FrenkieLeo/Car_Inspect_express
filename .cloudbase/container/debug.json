@@ -1,0 +1,46 @@
+{
+  "containers": [
+    {
+      "name": "wxcloudrun-express",
+      "domain": "",
+      "ip": "",
+      "mode": "compose",
+      "containerId": "504e8ea3f864c762dbf9b3a1a659aec896eebda12fb1c78f6241069d88979061"
+    }
+  ],
+  "config": {
+    "wxcloudrun-express": {
+      "containerPort": 80,
+      "dockerfilePath": "Dockerfile",
+      "buildDir": "",
+      "minNum": 0,
+      "maxNum": 5,
+      "cpu": 1,
+      "mem": 2,
+      "policyType": "cpu",
+      "policyThreshold": 80,
+      "policyDetails": [
+        {
+          "PolicyType": "cpu",
+          "PolicyThreshold": 80
+        },
+        {
+          "PolicyType": "mem",
+          "PolicyThreshold": 80
+        }
+      ],
+      "envParams": {
+        "MYSQL_USERNAME": "",
+        "MYSQL_PASSWORD": "",
+        "MYSQL_ADDRESS": ""
+      },
+      "customLogs": "stdout",
+      "initialDelaySeconds": 2,
+      "dataBaseName": "nodejs_demo",
+      "executeSQLs": [
+        "CREATE DATABASE IF NOT EXISTS nodejs_demo;",
+        "USE nodejs_demo;"
+      ]
+    }
+  }
+}

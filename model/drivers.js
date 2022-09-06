@@ -1,21 +1,8 @@
 const { Sequelize, DataTypes } = require("sequelize");
+const{sequelize} = require('./init')
 
 
-// // 从环境变量中读取数据库配置
-// const { MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_ADDRESS = "" } = process.env;
-const MYSQL_ADDRESS = 'sh-cynosdbmysql-grp-as2uyv3y.sql.tencentcdb.com:20531';
-const MYSQL_USERNAME = 'root';
-const MYSQL_PASSWORD ='FZbuk3nb';
-
-const [host, port] = MYSQL_ADDRESS.split(":");
-
-const sequelize = new Sequelize("carinspect", MYSQL_USERNAME, MYSQL_PASSWORD, {
-  host,
-  port,
-  dialect: "mysql" /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */,
-});
-//定义Drivers表
-const Drivers = sequelize.define("Drivers",{
+const DriversModel = sequelize.define("Drivers",{
     name:{
         type:DataTypes.STRING,
         allowNull:false,
@@ -43,8 +30,9 @@ const Drivers = sequelize.define("Drivers",{
         allowNull:true,
     },
     license_expire:{
-        type:DataTypes.DATE,
+        type:DataTypes.DATEONLY,
         allowNull:true,
+        defaultValue:'2022-09-01'
     },
     license_type:{
         type:DataTypes.STRING,
@@ -65,15 +53,20 @@ const Drivers = sequelize.define("Drivers",{
         allowNull:false,
         defaultValue:1,
     }
+},{
+    indexes: [
+        {
+          unique: true,
+          fields: ['name']
+        },
+    ]
 })
 
-// 数据库初始化方法
-async function init() {
-  await Drivers.sync({ alter: true });
-}
+// (async () => {
+//     await sequelize.sync({ force: true });
+// })();
 
-// 导出初始化方法和模型
-module.exports = {
-  init,
-  Drivers,
-};
+DriversModel.sync({alter:true})
+
+
+module.exports = DriversModel

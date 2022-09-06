@@ -1,61 +1,58 @@
 const path = require("path");
 const express = require("express");
-const cors = require("cors");
 const morgan = require("morgan");
-const { init: initDB, Counter } = require("./db");
-
+const {expressjwt:jwt} = require('express-jwt')
+const bodyParser = require('body-parser')
+const sequelize = require("sequelize");
 const logger = morgan("tiny");
+const history = require('connect-history-api-fallback')
+
+// 导入路由
+const driversRouter = require('./router/driver');
+const sysRouter = require('./router/sys');
+const userRouter = require('./router/user')
+
 
 const app = express();
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(cors());
-app.use(logger);
+// app.use 库
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+// app.use(logger);
+// app.use(express.static(path.join(__dirname, 'dist')))
+// app.use(history())
+app.use(jwt({
+  secret: 'frenkieLeo', // 签名的密钥 或 PublicKey
+  algorithms: ["HS256"]
+}).unless({
+  path: ['/','/user/login'] // 指定路径不经过 Token 解析
+}))
 
-// 首页
-app.get("/", async (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+
+// 解决跨域问题
+
+app.all('*', function (req, res, next){
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization,Access-Token,token,X-token');
+  res.header('Access-Control-Allow-Methods', '*');
+  res.header('Content-Type', 'application/json;charset=utf-8');
+  next();
+})
+
+// // 首页
+// app.get("/", async (req, res) => {
+//   res.sendFile(path.join(__dirname, "index.html"));
+// });
+
+// 路由判断
+app.use('/drivers',driversRouter)
+app.use('/sys',sysRouter)
+app.use('/user/',userRouter)
+
+
+
+
+// const port = process.env.PORT || 80;
+app.listen(27081, () => {
+    console.log("启动成功", 27081);
 });
 
-// 更新计数
-app.post("/api/count", async (req, res) => {
-  const { action } = req.body;
-  if (action === "inc") {
-    await Counter.create();
-  } else if (action === "clear") {
-    await Counter.destroy({
-      truncate: true,
-    });
-  }
-  res.send({
-    code: 0,
-    data: await Counter.count(),
-  });
-});
-
-// 获取计数
-app.get("/api/count", async (req, res) => {
-  const result = await Counter.count();
-  res.send({
-    code: 0,
-    data: result,
-  });
-});
-
-// 小程序调用，获取微信 Open ID
-app.get("/api/wx_openid", async (req, res) => {
-  if (req.headers["x-wx-source"]) {
-    res.send(req.headers["x-wx-openid"]);
-  }
-});
-
-const port = process.env.PORT || 80;
-
-async function bootstrap() {
-  await initDB();
-  app.listen(port, () => {
-    console.log("启动成功", port);
-  });
-}
-
-bootstrap();
