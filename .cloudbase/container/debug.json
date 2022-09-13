@@ -3,9 +3,7 @@
     {
       "name": "wxcloudrun-express",
       "domain": "",
-      "ip": "",
-      "mode": "compose",
-      "containerId": "504e8ea3f864c762dbf9b3a1a659aec896eebda12fb1c78f6241069d88979061"
+      "ip": ""
     }
   ],
   "config": {

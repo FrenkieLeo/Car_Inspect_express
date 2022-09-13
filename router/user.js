@@ -40,14 +40,6 @@ router.post("/login",(req,res,next)=>{
                     expiresIn: 3600*2
                 }
             )
-
-            // const logData = {
-            //     user_id: user.user_id,
-            //     ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,//用来表示 HTTP 请求端真实 IP
-            //     ua: req.headers['user-agent']
-            //     // User-Agent是Http协议中的一部分，属于头域的组成部分，User Agent也简称UA。
-            //     // 用较为普通的一点来说，是一种向访问网站提供你所使用的浏览器类型、操作系统及版本、CPU 类型、浏览器渲染引擎、浏览器语言、浏览器插件等信息的标识。UA字符串在每次浏览器 HTTP 请求时发送到服务器！
-            // }
             return res.json({
                 code: 20000,
                 message: '登录成功',
