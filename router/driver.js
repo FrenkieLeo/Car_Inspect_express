@@ -4,9 +4,12 @@ const DriversModel= require('../model/drivers')
 
 router.get("/",async(req,res)=>{
     const result = await DriversModel.findAll();
+    const filterData = result.filter(item => {
+      return item.show == 1
+    })
     res.json({
       code:20000,
-      data:result
+      data:filterData
     })
   })
 
@@ -14,38 +17,70 @@ router.post("/update",async(req,res)=>{
   const data = req.body
   const updateData = data.updateData
   const insertData = data.insertData
-  const allData = updateData.concat(insertData)
-  const dbData = []
-  //必须满足更新数据和插入数据
-  for(let i in allData) {
-    const newData = {
-        name:allData[i].name,
-        department:allData[i].department,
-        phone:allData[i].phone,
-        license_number:allData[i].license_number,
-        license_expire:allData[i].license_expire,
-        license_type:allData[i].license_type,
-        test_situation:allData[i].test_situation
-    }
-    dbData.push(newData)
-  }
-  try{
-    const result = await DriversModel.bulkCreate(dbData,{updateOnDuplicate:['name']})
-    if(result){
-      return res.json({
-        code:20000,
-        message:'更新成功',
-        data:{
-          result
+  const deleteData = data.deleteData
+  const update_result = []
+  // 实在没办法，单拎出来搞试试——更新数据
+  if(updateData){
+    for(let i in updateData) {
+      const update_newData = {
+          id:updateData[i].id,
+          name:updateData[i].name,
+          department:updateData[i].department,
+          phone:updateData[i].phone,
+          license_number:updateData[i].license_number,
+          license_expire:updateData[i].license_expire,
+          license_type:updateData[i].license_type,
+          test_situation:updateData[i].test_situation
+      }
+      const updateEveryLoop = await DriversModel.update(update_newData,{
+        where:{
+          id:update_newData.id
         }
       })
+      update_result.push(updateEveryLoop)
     }
-  }catch(err){
-    console.log(err)
   }
-  
-// 
+  if(deleteData) {
+    for(let i in deleteData) {
+      const delete_newData = {
+          id:deleteData[i].id,
+          name:deleteData[i].name,
+          show:0
+      }
+      const deleteEveryLoop = await DriversModel.update(delete_newData,{
+        where:{
+          id:delete_newData.id
+        }
+      })
+      update_result.push(deleteEveryLoop)
+    }
+  }
 
+  if(insertData){
+    for(let i in insertData) {
+      const insert_newData = {
+          name:insertData[i].name,
+          department:insertData[i].department,
+          phone:insertData[i].phone,
+          license_number:insertData[i].license_number,
+          license_expire:insertData[i].license_expire,
+          license_type:insertData[i].license_type,
+          test_situation:insertData[i].test_situation
+      }
+      const insertEveryLoop = await DriversModel.create(insert_newData)
+      update_result.push(insertEveryLoop)
+    }
+  }
+
+  if(update_result){
+    res.json({
+      code:20000,
+      message:'更新成功',
+      data:{
+        update_result
+      }
+    })
+  }
 })
 
 module.exports = router

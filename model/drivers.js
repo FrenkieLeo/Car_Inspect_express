@@ -3,17 +3,28 @@ const{sequelize} = require('./init')
 
 
 const DriversModel = sequelize.define("Drivers",{
+    id:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        autoIncrement:true,
+        primaryKey:true,
+    },
     name:{
         type:DataTypes.STRING,
         allowNull:false,
+        defaultValue:' ',
+        unique:true,
     },
     department:{
         type:DataTypes.STRING,
-        allowNull:false
+        allowNull:false,
+        defaultValue:'综合管理部'
     },
     phone:{
         type:DataTypes.STRING,
-        allowNull:false
+        allowNull:false,
+        unique:true,
+        defaultValue:''
     },
     is_driver:{
         type:DataTypes.TINYINT,
@@ -28,11 +39,12 @@ const DriversModel = sequelize.define("Drivers",{
     license_number:{
         type:DataTypes.STRING,
         allowNull:true,
+        defaultValue:''
     },
     license_expire:{
-        type:DataTypes.DATEONLY,
+        type:DataTypes.UUID,
         allowNull:true,
-        defaultValue:'2022-09-01'
+        defaultValue: DataTypes.UUIDV4
     },
     license_type:{
         type:DataTypes.STRING,
@@ -41,7 +53,8 @@ const DriversModel = sequelize.define("Drivers",{
     },
     test_situation:{
         type:DataTypes.STRING,
-        allowNull:true
+        allowNull:true,
+        defaultValue:'2022已测'
     },
     title:{
         type:DataTypes.STRING,
